@@ -25,6 +25,9 @@ $ forge build
 
 ```shell
 $ forge test
+$ forge test --match-path ./test/Counter.t.sol
+$ forge test --match-path test/Contract.t.sol --match-contract BigTest \
+  --match-test "testFail*"
 ```
 
 ### Format
