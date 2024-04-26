@@ -32,7 +32,11 @@ contract BankTest is Test {
          //通过地址钱包给1个ETH
         bank.depositETH{value:1 ether}();
         assertEq(bank.balanceOf(b), 1 ether);
+
+        //bytes4 solector = bytes4(keccak256(""));
+       // abi.encodeWithSelector(bank.depositETH., msg.sender, 12);
         // vm.stopPrank();
+        
     }
 
     function test_fail_depositETH() public {
