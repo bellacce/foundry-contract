@@ -38,7 +38,6 @@ contract NFTMarket is IERC721Receiver {
 	}
 
 	event Log(address from,address to, uint tokenId);
-
 	//1.先上架
 	function list(uint256 tokenId, uint256 amount) public  {
 		emit Log(msg.sender, address(this), tokenId);

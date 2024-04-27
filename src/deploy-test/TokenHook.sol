@@ -15,7 +15,7 @@ library Address {
     }
 }
 
-contract CusHookERC20 is ERC20 {
+contract TokenHook is ERC20 {
 
     using Address for address;
 
@@ -34,6 +34,11 @@ contract CusHookERC20 is ERC20 {
             require(rv, "No tokensReceived");
         }
         return true;
+    }
+
+    function changeUintToBytes(uint256 cnt) public pure returns (bytes memory data){
+        bytes memory encoded = abi.encode(cnt);
+        return encoded;
     }
 
 }

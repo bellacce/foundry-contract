@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.25;
-
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-import "./IEC20CallBack.sol";
 
-contract HookBank is IEC20CallBack {
+contract TokenBank {
 
     ERC20 public token;
     mapping(address => uint256) public balanceOf;
@@ -18,16 +16,6 @@ contract HookBank is IEC20CallBack {
     constructor(ERC20 _token){
         token = _token;
     }
-
-
-    //转账到合约账户
-    function tokensReceived(address sender, uint amount, bytes memory) external override returns (bool){
-        require(msg.sender == address(token), "no invalid address");
-        //bank记录资金池
-        balanceOf[sender] += amount;
-        return true;
-    }
- 
 
     //1.存入token
     function deposit(uint256 _amount) external {
@@ -47,5 +35,7 @@ contract HookBank is IEC20CallBack {
         token.transfer(msg.sender, tokenAmount);
         emit Withdraw(msg.sender, tokenAmount);
     }
+
+    
 
 }

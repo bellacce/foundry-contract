@@ -2,26 +2,33 @@
 pragma solidity 0.8.25;
 
 import {Test, console} from "forge-std/Test.sol";
-import {Bank} from "../../src/start-learn/Bank.sol";
-import {CusERC20} from "../../src/start-learn/CusERC20.sol";
+import {NFTMarket} from "../../src/deploy-test/NFTMarket.sol";
+import {TokenBank} from "../../src/deploy-test/TokenBank.sol";
+import {TokenHook} from "../../src/deploy-test/TokenHook.sol";
+
 
 // const { deployContract, link } = require('@openzeppelin/forge');
 // const { Script, console } = require('forge-std/Script.sol');
 //forge install OpenZeppelin/openzeppelin-contracts --no-commit
 contract BankTest is Test {
-    Bank public bank;
-    CusERC20 public erc20;
+    NFTMarket public nFTMarket;
+    TokenBank public tokenBank;
+    TokenHook public tokenHook;
 
 
     function setUp() public {
-        erc20 = new CusERC20();
-        bank = new Bank(erc20);
+        nFTMarket = new NFTMarket();
+        tokenBank = new TokenBank();
+        tokenHook = new TokenHook();
     }
 
     //vm.prank(address) 零时修改 改变下一次调用的msg.sender,只改变下一次调用
     // 如果后面的调用也一直保持修改，使用vm.startPrank(alice); vm.stopPrank();
     //deal(address who, uint256 newBalance) 改变who地址的余额。
     function test_depositETH() public {
+                vm.prank(b);
+
+
         //bank.
         address b = makeAddr("alice");
         vm.prank(b);
