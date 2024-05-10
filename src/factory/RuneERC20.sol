@@ -14,13 +14,15 @@ contract RuneERC20 is ERC20 {
     //代币铸造费用
     uint256 _price;
 
+    address private owner;
+
     //铸造代币名称：name, symbol
     constructor(uint256 totalSupply, uint256 perMint, uint256 price, string memory name, string memory symbol)
         ERC20(name, symbol)
     {
         owner = msg.sender;
         _symbol = symbol;
-        _balance = balance;
+        _balance = 0;
         _totalSupply = totalSupply;
         _perMint = perMint;
         _price = price;
@@ -32,7 +34,7 @@ contract RuneERC20 is ERC20 {
         require(_totalSupply > (_balance + _perMint), "totalSupply is not enough");
 
         //开始铸造
-        _mint(msg.sender, _perMint);
+        _mint(addr, _perMint);
         _balance += _perMint;
         //每次铸造费用给own
         transfer(owner, price);

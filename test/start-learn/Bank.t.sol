@@ -12,7 +12,6 @@ contract BankTest is Test {
     Bank public bank;
     CusERC20 public erc20;
 
-
     function setUp() public {
         erc20 = new CusERC20();
         bank = new Bank(erc20);
@@ -25,23 +24,21 @@ contract BankTest is Test {
         //bank.
         address b = makeAddr("alice");
         vm.prank(b);
-        erc20.mint(b, 1000); 
+        erc20.mint(b, 1000);
         //先给地址钱包1个ETH
-        deal(b,1 ether);
-         vm.prank(b);
-         //通过地址钱包给1个ETH
-        bank.depositETH{value:1 ether}();
+        deal(b, 1 ether);
+        vm.prank(b);
+        //通过地址钱包给1个ETH
+        bank.depositETH{value: 1 ether}();
         assertEq(bank.balanceOf(b), 1 ether);
 
         //打开事件
         vm.expectEmit();
         emit Bank.Deposit(address(0), 0.5 ether);
 
-
         //bytes4 solector = bytes4(keccak256(""));
-       // abi.encodeWithSelector(bank.depositETH., msg.sender, 12);
+        // abi.encodeWithSelector(bank.depositETH., msg.sender, 12);
         // vm.stopPrank();
-        
     }
 
     function test_fail_depositETH() public {
@@ -49,7 +46,5 @@ contract BankTest is Test {
         vm.prank(b);
         vm.expectRevert("Deposit amount must be greater than 0");
         bank.depositETH();
-
     }
-
 }

@@ -1,7 +1,7 @@
 pragma solidity 0.8.25;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-
+import "./RuneERC20.sol";
 /**
  * 在以太坊上⽤ ERC20 模拟铭⽂铸造，编写一个可以通过最⼩代理来创建ERC20 的⼯⼚合约，⼯⼚合约包含两个方法：
  *
@@ -16,6 +16,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
  * 每次发行的数量正确，且不会超过 totalSupply.
  * 请包含运行测试的截图或日志
  */
+
 contract FoctoryERC20 {
     //已经部署的合约地址
     address[] public deployedContracts;
@@ -24,22 +25,22 @@ contract FoctoryERC20 {
     //事件部署标记
     event DeployInscription(string symbol, uint256 totalSupply, uint256 perMint, uint256 price);
     //铸造代币
-    event MintInscription(string tokenAddr);
+    event MintInscription(address tokenAddr);
 
     // symbol 表示新创建代币的代号，
     // totalSupply 表示总发行量，
     // perMint 表示单次的创建量，
     // price 表示每个代币铸造时需要的费用（wei 计价）
-    function deployInscription(string symbol, uint256 totalSupply, uint256 perMint, uint256 price)
+    function deployInscription(string memory symbol, uint256 totalSupply, uint256 perMint, uint256 price)
         external
         returns (address addr)
     {
         require(!symbolExists(symbol), "Symbol already exists");
         //创建合约
-        RuneERC20 rune = new RuneERC20(totalSupply, perMint, price, name, symbol);
+        RuneERC20 rune = new RuneERC20(totalSupply, perMint, price, symbol, symbol);
         //添加部署合约
-        deployedContracts.add(address(rune));
-        symbols.add(symbol);
+        deployedContracts.push(address(rune));
+        symbols.push(symbol);
 
         emit DeployInscription(symbol, totalSupply, perMint, price);
         return address(rune);
@@ -56,7 +57,7 @@ contract FoctoryERC20 {
     //检查符文是否存在
     function symbolExists(string memory symbol) internal view returns (bool) {
         for (uint256 i = 0; i < symbols.length; i++) {
-            if (symbols[i] == symbol) {
+            if (keccak256(abi.encodePacked(symbols[i])) == keccak256(abi.encodePacked(symbol))) {
                 return true;
             }
         }
