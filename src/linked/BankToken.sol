@@ -10,9 +10,9 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 // 3. 用可迭代的链表保存存款金额的前 10 名用户
 
 contract BankToken {
-    mapping(address => address) _addressMap;
+    mapping(address => address) public _addressMap;
 
-    mapping(address => uint256) _addressEth;
+    mapping(address => uint256) public _addressEth;
 
     address constant GUARD = address(0);
 
@@ -22,8 +22,16 @@ contract BankToken {
         _addressMap[GUARD] = GUARD;
     }
 
+    // receive函数
+    // 纯转账调用这个函数
+    receive() external payable {}
+
+    // fallback函数
+    // 除纯转账外所有调用都调用这个函数
+    fallback() external payable {}
+
     //给合约地址转账
-    receive() external payable {
+    function depositETH() external payable {
         address firstAddr = _addressMap[GUARD];
         //获取map的金额
         _addressEth[msg.sender] += msg.value;
@@ -33,6 +41,7 @@ contract BankToken {
             _addressMap[GUARD] = msg.sender;
             return;
         }
+        address currentAddr = GUARD;
         address nextAddr = _addressMap[GUARD];
         // address nextAddr = _addressMap[beforeAddr];
         for (uint256 index = 0; index < listSize; index++) {
@@ -40,10 +49,13 @@ contract BankToken {
             uint256 amount = _addressEth[nextAddr];
             if (ethCnt >= amount && nextAddr != msg.sender) {
                 //断开链表 插入地址
-                _addressMap[nextAddr] = msg.sender;
+                _addressMap[currentAddr] = msg.sender;
                 _addressMap[msg.sender] = nextAddr;
+                break;
             }
-            nextAddr = _addressMap[nextAddr];
+            //向下遍历继续寻找最大值
+            currentAddr = nextAddr;
+            nextAddr = _addressMap[currentAddr];
         }
         listSize++;
     }

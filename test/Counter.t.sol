@@ -7,7 +7,7 @@ import {Counter} from "../src/Counter.sol";
 contract CounterTest is Test {
     function setUp() public {}
 
-    function test_Increment() public {
+    function test_execute() public {
         //counter.increment();
         //assertEq(counter.number(), 1);
     }
