@@ -31,9 +31,18 @@ contract StakeTest is Test {
 
         _esRntERC20 = new EsRntERC20();
         _stakeMine = new StakeMine(address(_rntERC20), address(_esRntERC20));
-        //开始质押
-        _stakeMine.stake(100 * 10 ** 18);
+        vm.stopPrank();
 
+        //开始质押
+        vm.startPrank(player1);
+        _rntERC20.approve(address(_stakeMine), 100 * 10 ** 18);
+        _stakeMine.stake(100 * 10 ** 18);
+        vm.stopPrank();
+
+        vm.startPrank(player2);
+        _rntERC20.approve(address(_stakeMine), 100 * 10 ** 18);
+        _rntERC20.approve(player2, 100 * 10 ** 18);
+        _stakeMine.stake(100 * 10 ** 18);
         vm.stopPrank();
     }
 }

@@ -46,6 +46,8 @@ contract StakeMine {
 
         _lastStakeTime[msg.sender] = block.timestamp;
         _stakebalances[msg.sender] += amount;
+
+        _rntERC20.transferFrom(msg.sender, address(this), amount);
     }
 
     //可随时解押提取已质押的 RNT
@@ -85,13 +87,11 @@ contract StakeMine {
         uint256 reward = calculateReward(msg.sender);
         require(amount > reward, "No reward to claim");
 
-        //代币转移
+        //代币兑换RNT
         _rntERC20.transfer(msg.sender, amount);
 
-        //质押的置换代币被燃烧
-        _stakebalances[msg.sender] -= amount;
-        //代币燃烧
-        // _rntERC20.transfer(address(0), leaveRnt);
+        //esRNT 代币燃烧
+        _esrntERC20.transfer(address(0), amount);
     }
 
     //计算收益
