@@ -16,10 +16,9 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 // 提供 github IDO合约源码链接
 
 contract IdoRaise {
-
-    //预售价格 
-    //募集ETH目标 
-    // 超募上限 
+    //预售价格
+    //募集ETH目标
+    // 超募上限
     //预售时长
-    function mintProject(uint price, uint targetAmountETH, uint overAmount)
+    function mintProject(uint256 price, uint256 targetAmountETH, uint256 overAmount) public {}
 }

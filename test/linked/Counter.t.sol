@@ -2,9 +2,12 @@
 pragma solidity 0.8.25;
 
 import {Test, console} from "forge-std/Test.sol";
-import {Counter} from "../src/Counter.sol";
+import {BankToken} from "../../src/linked/BankToken.sol";
 
-contract CounterTest is Test {
+contract BankTokenTest is Test {
+
+    // BankToken 
+
     function setUp() public {}
 
     function test_Increment() public {
