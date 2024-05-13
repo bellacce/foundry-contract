@@ -59,57 +59,39 @@ contract AirdopMerkleNFTMarket {
     }
 
     //授权
-    function permitPrePay(
-        uint256 nftId,
-        uint256 amount,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s,
-        uint256 discount
-    ) public {
+    function permitPrePay(uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) public {
         IERC20Permit(_tokenERC2612).permit(msg.sender, address(this), amount, deadline, v, r, s);
-        //转入token
-        TokenERC2612(_tokenERC2612).transferFrom(msg.sender, _nftHolder[nftId], _nftPrice[nftId] / discount);
-        //拥有token的人获得token金额
-        balanceOfToken[_nftHolder[nftId]] += _nftPrice[nftId] / discount;
     }
 
-    function claimNFT(uint256 nftId) public {
+    function claimNFT(bytes32[] memory proof, uint256 nftId) public {
+        //验证是不是白名单里面
+        bool isWhite = verifyWhitelist(proof, msg.sender);
+        if (isWhite) {
+            //转入token
+            TokenERC2612(_tokenERC2612).transferFrom(msg.sender, _nftHolder[nftId], _nftPrice[nftId] / 2);
+            //拥有token的人获得token金额
+            balanceOfToken[_nftHolder[nftId]] += _nftPrice[nftId] / 2;
+        } else {
+            //转入token
+            TokenERC2612(_tokenERC2612).transferFrom(msg.sender, _nftHolder[nftId], _nftPrice[nftId]);
+            //拥有token的人获得token金额
+            balanceOfToken[_nftHolder[nftId]] += _nftPrice[nftId];
+        }
         //转到对方NFT
         NFTToken(_nftToken).transferFrom(address(this), msg.sender, nftId);
         _nftHolder[nftId] = msg.sender;
     }
 
-    function multicall(
-        bytes32[] memory proof,
-        uint256 nftId,
-        uint256 tokenAmount,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) public returns (bool) {
-        //验证是不是白名单里面
-        bool isWhite = verifyWhitelist(proof, msg.sender);
-        bytes memory permitPrePayData;
-        if (isWhite) {
-            //授权转入 白名单拥有折扣
-            permitPrePayData =
-                abi.encodeWithSelector(this.permitPrePay.selector, nftId, tokenAmount, deadline, v, r, s, 2);
-        } else {
-            //授权转入
-            permitPrePayData =
-                abi.encodeWithSelector(this.permitPrePay.selector, nftId, tokenAmount, deadline, v, r, s, 1);
+    // multicall 调用permitPrePay和claimNFT
+    function multicall(bytes[] calldata data) external returns (bytes[] memory results) {
+        // 声明一个数组来存储调用返回值
+        results = new bytes[](data.length);
+        // 遍历传进来的需要去调用的方法字节数组
+        for (uint256 i = 0; i < data.length; i++) {
+            (bool success, bytes memory result) = address(this).delegatecall(data[i]);
+            require(success, "Delegatecall failed");
+            results[i] = result;
         }
-        (bool success,) = address(this).delegatecall(abi.encodePacked(permitPrePayData));
-        require(success, "this.permitPrePay.selector failed");
-
-        //获得nft
-        bytes memory claimData = abi.encodeWithSelector(this.claimNFT.selector, nftId);
-        (bool success2,) = address(this).delegatecall(abi.encodePacked(claimData));
-        require(success2, "this.claimNFT.selector failed");
-
-        return true;
+        return results;
     }
 }

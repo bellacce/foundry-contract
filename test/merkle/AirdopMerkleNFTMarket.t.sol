@@ -74,8 +74,23 @@ contract AirdopMerkleNFTMarketTest is Test {
 
         //3.alice是白名单用户，要靠资金买的
         vm.startPrank(alice);
-        bool flag = airdopMerkleNFTMarket.multicall(proof, nftId, 1000, _deadline, v, r, s);
-        require(flag, "multicall error!");
+
+        //封装call参数
+        // 封装permitPrePay函数与参数
+        bytes memory permitCall =
+            abi.encodeWithSelector(airdopMerkleNFTMarket.permitPrePay.selector, 1000, _deadline, v, r, s);
+        // 封装claimNFT函数与参数
+        bytes memory claimCall = abi.encodeWithSelector(airdopMerkleNFTMarket.claimNFT.selector, proof, nftId);
+
+        // 将两个call组成一个数组
+        bytes[] memory calls = new bytes[](2);
+        calls[0] = permitCall;
+        calls[1] = claimCall;
+
+        bytes[] memory results = airdopMerkleNFTMarket.multicall(calls);
+        //console.log(abi.decode(results[0]));
+        assertEq(results.length, 2);
+
         vm.stopPrank();
     }
 
