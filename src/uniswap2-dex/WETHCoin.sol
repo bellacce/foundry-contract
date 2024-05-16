@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.25;
 
-contract WETHCoin {
+import "../uniswap2/interfaces/IWETH.sol";
+
+contract WETHCoin is IWETH {
     string public name = "Wrapped Ether";
     string public symbol = "WETH";
     uint8 public decimals = 18;
