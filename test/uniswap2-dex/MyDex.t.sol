@@ -102,7 +102,7 @@ contract MyDexTest is Test {
         console.log(rntERC20.balanceOf(bob));
         vm.stopPrank();
 
-        vm.startPrank(alice);
+        vm.startPrank(alice); 
         //兑换RNT > WETH
         address[] memory path = new address[](2);
         path[0] = address(rntERC20); // 假设第一个代币地址
