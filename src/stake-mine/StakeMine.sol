@@ -80,7 +80,7 @@ contract StakeMine {
         require(_stakebalances[msg.sender] >= amount, "not enough RNT!");
 
         //计算收益
-        uint256 reward = calculateReward(msg.sender, _stakebalances[msg.sender]);
+        uint256 reward = calculateReward(_stakebalances[msg.sender]);
         if (reward > 0) {
             _lastClaimTime[msg.sender] = block.timestamp;
             require(_esrntERC20.transfer(msg.sender, reward), "Reward transfer failed");
@@ -92,7 +92,7 @@ contract StakeMine {
     //到期用户获取代币收益 释放质押
     function claimReward() external {
         uint256 amount = _stakebalances[msg.sender];
-        uint256 reward = calculateReward(msg.sender, amount);
+        uint256 reward = calculateReward(amount);
         require(reward > 0, "No reward to claim");
 
         //代币归还
@@ -109,7 +109,7 @@ contract StakeMine {
         require(_stakebalances[msg.sender] >= amount, "not enough stakebalance!");
 
         //计算收益
-        uint256 reward = calculateReward(msg.sender, amount);
+        uint256 reward = calculateReward(amount);
         require(amount > reward, "No reward to claim");
 
         //代币兑换RNT
@@ -120,7 +120,7 @@ contract StakeMine {
     }
 
     //计算收益: 收益 领取收益的RNT
-    function calculateReward(address account, uint256 amount) public view returns (uint256) {
+    function calculateReward(uint256 amount) public view returns (uint256) {
         uint256 reward;
         uint256 addStake;
         uint256 arrIndex;
@@ -131,9 +131,9 @@ contract StakeMine {
             uint256 stCnt = _stakeInfo[msg.sender][stakePoints[i]];
             addStake += stCnt;
             if (amount > addStake) {
-                reward = getStakeReward(sinceLastClaim, stCnt);
+                reward = getStakeReward(sinceLastClaim, stCnt, 30 days);
             } else {
-                reward = getStakeReward(sinceLastClaim, amount + stCnt - addStake);
+                reward = getStakeReward(sinceLastClaim, amount + stCnt - addStake, 30 days);
                 break;
             }
             arrIndex++;
@@ -155,8 +155,8 @@ contract StakeMine {
         return reward;
     }
 
-    function getStakeReward(uint256 claimTime, uint256 amount) internal view returns (uint256) {
-        if (claimTime >= 30 days) {
+    function getStakeReward(uint256 claimTime, uint256 amount, uint256 interval_time) internal view returns (uint256) {
+        if (claimTime >= interval_time) {
             //每天认领1个coin
             return (claimTime * rewardRate * amount) / (1 days);
         } else {

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.25;
 
-import "./IDex.sol"; 
+import "./IDex.sol";
 
 import "../uniswap2/interfaces/IUniswapV2Factory.sol";
 import "../uniswap2/libraries/TransferHelper.sol";
@@ -220,5 +220,11 @@ contract MyDex is IDex {
         //转账WETH
         IWETH(WETH).withdraw(amounts[amounts.length - 1]);
         TransferHelper.safeTransferETH(msg.sender, amounts[amounts.length - 1]);
+
+        //swap
+        //withdraw
+        //send
+
+        //算出能换多少的数量 getAmount
     }
 }
