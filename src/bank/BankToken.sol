@@ -8,13 +8,14 @@ pragma solidity 0.8.25;
 // import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
 contract BankToken {
+    address public owner;
     address public admin;
     address[3] public top3;
 
     mapping(address => uint256) balanceOf;
 
     modifier Admin() {
-        require(admin == msg.sender, "is not auth!");
+        require(owner == msg.sender || admin == msg.sender, "is not auth!");
         _;
     }
 
@@ -38,6 +39,10 @@ contract BankToken {
 
     constructor() {
         admin = msg.sender;
+    }
+
+    function changeAdmin(address addr) external Admin {
+        admin = addr;
     }
 
     function withdraw(uint256 amount) external Admin {
