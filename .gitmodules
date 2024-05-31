@@ -7,3 +7,9 @@
 [submodule "lib/merkle-tree"]
 	path = lib/merkle-tree
 	url = https://github.com/openzeppelin/merkle-tree
+[submodule "lib/chainlink-brownie-contracts"]
+	path = lib/chainlink-brownie-contracts
+	url = https://github.com/smartcontractkit/chainlink-brownie-contracts
+[submodule "lib/chainlink"]
+	path = lib/chainlink
+	url = https://github.com/smartcontractkit/chainlink
